@@ -1,0 +1,16 @@
+{
+  "name": "find-iitk",
+  "homepage": "https://pranshul69ghost-byte.github.io/find-iitk",
+  "private": true,
+  "packageManager": "pnpm@9",
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "dev": "pnpm -r run dev",
+    "build": "pnpm -r run build",
+    "typecheck": "pnpm -r run typecheck",
+    "lint": "pnpm -r run lint",
+    "format": "pnpm -r run format",
+    "predeploy": "pnpm --filter web run build",
+    "deploy": "pnpm --filter web run deploy"
+  }
+}
