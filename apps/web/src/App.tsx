@@ -103,6 +103,7 @@ export default function App() {
               <UserDetail />
             </RequireAuth>
           } />
+          <Route path="*" element={<div className="card pad">Not found</div>} />
         </Routes>
       </main>
 
