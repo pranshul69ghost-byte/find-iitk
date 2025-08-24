@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { api } from "../services/api";
 import { useLocation, useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
@@ -52,11 +53,21 @@ export default function Messages() {
     setMessages(msgs);
     setTimeout(scrollBottom, 20);
   }
-  async function send(){
-    if (!text.trim() || !active) return;
-    const { data } = await api.post(`/chats/${active._id}/messages`, { text });
-    setMessages((m)=>m.concat([data])); setText("");
-    setTimeout(scrollBottom, 20);
+  const sendMutation = useMutation({
+    mutationFn: async (body: { text: string; clientId: string }) => {
+      return api.post(`/chats/${active._id}/messages`, body);
+    },
+    onSuccess: ({ data }) => {
+      setMessages((m)=>m.concat([data]));
+      setText("");
+      setTimeout(scrollBottom, 20);
+    }
+  });
+
+  function send(){
+    if (!text.trim() || !active || sendMutation.isPending) return;
+    const clientId = crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`;
+    sendMutation.mutate({ text, clientId });
   }
   function onKey(e: React.KeyboardEvent<HTMLInputElement>){
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
@@ -120,8 +131,10 @@ export default function Messages() {
             </div>
 
             <div className="input-bar">
-              <input placeholder="Type a message…" value={text} onChange={(e)=>setText(e.target.value)} onKeyDown={onKey} />
-              <button className="btn primary" onClick={send}>Send</button>
+              <input placeholder="Type a message…" value={text} onChange={(e)=>setText(e.target.value)} onKeyDown={onKey} disabled={sendMutation.isPending} />
+              <button className="btn primary" onClick={send} disabled={sendMutation.isPending} aria-busy={sendMutation.isPending}>
+                {sendMutation.isPending ? "Sending…" : "Send"}
+              </button>
             </div>
           </>
         )}

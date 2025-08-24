@@ -35,8 +35,22 @@ listingsRouter.get("/", requireAuth, async (req, res) => {
 
 // POST create (auth + phone required)
 listingsRouter.post("/", requireAuth, requireProfileComplete, async (req: any, res) => {
-  const body = { ...req.body, ownerId: req.user.id };
-  const doc = await Listing.create(body);
+  const { clientId } = req.body as { clientId?: string };
+  if (clientId) {
+    const existing = await Listing.findOne({ clientId });
+    if (existing) return res.status(200).json(existing);
+  }
+  
+  let doc;
+  try {
+    doc = await Listing.create({ ...req.body, ownerId: req.user.id });
+  } catch (e: any) {
+    if (e.code === 11000 && clientId) {
+      const existing = await Listing.findOne({ clientId });
+      if (existing) return res.status(200).json(existing);
+    }
+    throw e;
+  }
 
   const recipients = (env.NOTIFY_EMAILS || "").split(",").map(s=>s.trim()).filter(Boolean);
   if (recipients.length) {

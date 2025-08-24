@@ -48,20 +48,33 @@ chatsRouter.get("/:id/messages", requireAuth, async (req: any, res) => {
 // Send a message
 chatsRouter.post("/:id/messages", requireAuth, requireProfileComplete, async (req: any, res) => {
   const chat = await Chat.findById(req.params.id);
-  if (!chat || !chat.participants.map(String).includes(req.user.id.toString()))
+  if (!chat || !chat.participants.map(String).includes(String(req.user.id)))
     return res.status(403).json({ error: "Not allowed" });
-  const text = (req.body?.text || "").toString().trim();
+
+  const text = String(req.body?.text || "").trim();
+  const clientId = String(req.body?.clientId || "");
   if (!text) return res.status(400).json({ error: "text required" });
+  if (!clientId) return res.status(400).json({ error: "clientId required" });
 
-  const msg = await Message.create({ chatId: chat._id, senderId: req.user.id, text });
-  chat.lastMessage = text;
-  chat.lastMessageAt = new Date();
-  await chat.save();
+  // Idempotency: return existing if same clientId already stored
+  let msg = await Message.findOne({ chatId: chat._id, senderId: req.user.id, clientId });
+  if (!msg) {
+    try {
+      msg = await Message.create({ chatId: chat._id, senderId: req.user.id, clientId, text });
+      chat.lastMessage = text;
+      chat.lastMessageAt = new Date();
+      await chat.save();
+    } catch (e: any) {
+      // If a race created the message, fetch it and return
+      if (e.code === 11000) {
+        msg = await Message.findOne({ chatId: chat._id, senderId: req.user.id, clientId });
+      } else throw e;
+    }
+  }
 
-  // emit to both participants
   const io = req.app.get("io");
-  const others = chat.participants.map(String).filter((id) => id !== req.user.id.toString());
-  others.forEach((id) => io.to(`user:${id}`).emit("message:new", { chatId: chat._id.toString(), message: msg }));
+  const others = chat.participants.map(String).filter((id) => id !== String(req.user.id));
+  others.forEach((id) => io.to(`user:${id}`).emit("message:new", { chatId: String(chat._id), message: msg }));
 
   res.status(201).json(msg);
 });

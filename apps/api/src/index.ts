@@ -8,6 +8,7 @@ import { Server as SocketIOServer } from "socket.io";
 import jwt from "jsonwebtoken";
 import path from "path";
 
+import rateLimit from "express-rate-limit";
 import { env } from "./lib/env.js";
 import { authRouter } from "./routes/auth.js";
 import { listingsRouter } from "./routes/listings.js";
@@ -33,8 +34,14 @@ app.get("/health", (_, res) => res.json({ ok: true }));
 
 app.use("/auth", authRouter);
 app.use("/users", usersRouter);
-app.use("/listings", listingsRouter);
+
+// Rate limits for duplicate prevention
+const listingLimit = rateLimit({ windowMs: 2000, max: 1, standardHeaders: true, legacyHeaders: false, message: { error: "Too many posts, slow down." } });
+const messageLimit = rateLimit({ windowMs: 1000, max: 3, standardHeaders: true, legacyHeaders: false, message: { error: "Too many messages, slow down." } });
+
+app.use("/listings", listingLimit, listingsRouter);
 app.use("/files", filesRouter);
+app.use("/chats/:id/messages", messageLimit);
 app.use("/chats", chatsRouter);
 
 // Serve local uploads (when not using Cloudinary)

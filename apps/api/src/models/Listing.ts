@@ -21,7 +21,8 @@ const ListingSchema = new Schema(
       label: String,
       geo: { type: { type: String, enum: ["Point"] }, coordinates: [Number] }
     },
-    status: { type: String, enum: ["active", "pending", "claimed", "sold", "resolved"], default: "active", index: true }
+    status: { type: String, enum: ["active", "pending", "claimed", "sold", "resolved"], default: "active", index: true },
+    clientId: { type: String, index: { unique: true, sparse: true } }
   },
   { timestamps: true }
 );
