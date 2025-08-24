@@ -2,7 +2,7 @@
   "name": "find-iitk",
   "homepage": "https://pranshul69ghost-byte.github.io/find-iitk",
   "private": true,
-  "packageManager": "pnpm@9",
+  "packageManager": "pnpm@9.0.0",
   "workspaces": ["apps/*", "packages/*"],
   "scripts": {
     "dev": "pnpm -r run dev",
