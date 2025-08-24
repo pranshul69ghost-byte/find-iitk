@@ -3,7 +3,7 @@ import Home from "./pages/Home";
 import ListingDetail from "./pages/ListingDetail";
 import Profile from "./pages/Profile";
 import Messages from "./pages/Messages";
-import Login from "./pages/Login";
+import Auth from "./pages/Auth";
 import UserDetail from "./pages/UserDetail";
 import { useEffect, useRef, useState } from "react";
 import ListingModal from "./components/ListingModal";
@@ -70,7 +70,7 @@ export default function App() {
 
       <main className="container">
         <Routes>
-          <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<Auth />} />
 
           <Route path="/" element={
             <RequireAuth>
