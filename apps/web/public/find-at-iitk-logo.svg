@@ -1,0 +1,39 @@
+<!-- Find@IITK — Horizontal Logo -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 220" role="img" aria-labelledby="title desc">
+  <title>Find@IITK Logo</title>
+  <desc>A map-pin + magnifier logomark with Find@IITK wordmark</desc>
+
+  <style>
+    :root {
+      --brand: #0ea5e9;   /* change this to your brand color */
+      --ink:   #0f172a;   /* primary text color */
+      --muted: #475569;   /* secondary text color */
+      --white: #ffffff;
+    }
+    .wordmark { font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol", sans-serif; }
+    .bold { font-weight: 800; }
+    .semi { font-weight: 700; }
+    .med  { font-weight: 600; }
+  </style>
+
+  <!-- LOGOMARK (map pin with magnifier) -->
+  <g transform="translate(20,20)">
+    <!-- Pin silhouette -->
+    <path d="M90 0C40.3 0 0 40.3 0 90c0 61.5 90 140 90 140s90-78.5 90-140C180 40.3 139.7 0 90 0z"
+          fill="var(--brand)"/>
+    <!-- Lens -->
+    <circle cx="90" cy="86" r="44" fill="var(--white)" opacity="0.95"/>
+    <!-- Inner lens ring -->
+    <circle cx="90" cy="86" r="32" fill="none" stroke="var(--brand)" stroke-width="8"/>
+    <!-- Magnifier handle -->
+    <path d="M118 114 L145 141" stroke="var(--white)" stroke-width="14" stroke-linecap="round"/>
+  </g>
+
+  <!-- WORDMARK -->
+  <g class="wordmark" transform="translate(240,110)">
+    <text class="bold" x="0" y="0" font-size="72" fill="var(--ink)">Find</text>
+    <text class="bold" x="232" y="0" font-size="72" fill="var(--brand)">@</text>
+    <text class="semi" x="285" y="0" font-size="72" fill="var(--ink)">IITK</text>
+    <text class="med" x="2" y="44" font-size="22" fill="var(--muted)" letter-spacing="0.5">search • places • people • events</text>
+  </g>
+</svg>

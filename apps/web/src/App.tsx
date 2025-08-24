@@ -38,7 +38,12 @@ export default function App() {
         <header>
           <div className="nav" style={{ maxWidth: "100%" }}>
             <a className="brand" href="#" onClick={(e)=>{e.preventDefault(); nav("/");}}>
-              <span className="brand-badge">I</span><span>IITK Market</span>
+              <img 
+                src="/find-at-iitk-icon.svg" 
+                alt="Find@IITK Logo" 
+                style={{ height: "24px", width: "24px", marginRight: "8px" }}
+              />
+              <span>Find@IITK</span>
             </a>
             <div style={{ marginLeft: 12 }} className="flex">
               <NavLink to="/" className="btn">Home</NavLink>
