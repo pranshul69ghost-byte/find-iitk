@@ -9,7 +9,6 @@ export default function Home({ openPostModal: _ }: { openPostModal?: () => void 
   const [q, setQ] = useState(""); const [cat, setCat] = useState("all");
   const [type, setType] = useState("all"); const [min, setMin] = useState(""); const [max, setMax] = useState("");
   const [sort, setSort] = useState("updatedAt_desc");
-  const [showFilters, setShowFilters] = useState(false);
 
   const params: any = useMemo(() => {
     const p: any = {};
@@ -67,7 +66,7 @@ export default function Home({ openPostModal: _ }: { openPostModal?: () => void 
             </select>
           </div>
         </div>
-      )}
+      </div>
 
       {isLoading ? <div className="empty">Loading…</div> :
         items?.length ? (
