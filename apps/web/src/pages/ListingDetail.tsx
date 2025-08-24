@@ -36,11 +36,19 @@ export default function ListingDetail() {
     onSuccess: (res) => nav(`/messages?chat=${res.data._id}`)
   });
 
+  const { data: me } = useQuery({ queryKey: ["me"], queryFn: () => api.get("/users/me").then(r => r.data) });
+  
+  const removeListing = useMutation({
+    mutationFn: () => api.delete(`/listings/${id}`),
+    onSuccess: () => { alert("Listing deleted"); nav("/", { replace: true }); }
+  });
+
   useEffect(() => { window.scrollTo(0, 0); }, [id]);
 
   // Safe derived values that can run even before data arrives
   const listing = listingQ.data;
   const owner = typeof listing?.ownerId === "object" ? listing.ownerId : null;
+  const isOwner = me && listing?.ownerId && (listing.ownerId._id ? listing.ownerId._id === me._id : String(listing.ownerId) === me._id);
 
   const details = useMemo(() => {
     if (!listing) return [];
@@ -120,6 +128,14 @@ export default function ListingDetail() {
             </div>
             <div className="row" style={{ marginTop: 12 }}>
               <button className="btn primary" onClick={() => startChat.mutate()}>Message</button>
+              {isOwner && (
+                <button
+                  className="btn"
+                  onClick={() => { if (confirm("Delete this listing?")) removeListing.mutate(); }}
+                >
+                  Delete listing
+                </button>
+              )}
             </div>
           </div>
         ) : (
