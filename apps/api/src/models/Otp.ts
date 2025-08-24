@@ -4,7 +4,7 @@ const OtpSchema = new Schema(
   {
     email: { type: String, index: true },
     codeHash: String,
-    expiresAt: { type: Date, index: true },
+    expiresAt: Date,
     consumed: { type: Boolean, default: false },
     attempts: { type: Number, default: 0 }
   },
