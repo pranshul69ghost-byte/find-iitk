@@ -1,4 +1,5 @@
 import { Router } from "express";
+import rateLimit from "express-rate-limit";
 import { Listing } from "../models/Listing.js";
 import { requireAuth } from "../middleware/auth.js";
 import { requireProfileComplete } from "../middleware/requireProfileComplete.js";
@@ -12,6 +13,15 @@ function rx(q: string) {
   return new RegExp(safe, "i");
 }
 export const listingsRouter = Router();
+
+const createListingLimiter = rateLimit({
+  windowMs: 2000,               // 2s window
+  max: 2,                       // allow up to 2 create attempts in 2s
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req: any) => req.user?.id || req.ip,
+  message: { error: "Too many posts. Please wait a moment." }
+});
 
 // GET list (auth required) — hides non-active by default
 listingsRouter.get("/", requireAuth, async (req, res) => {
@@ -34,7 +44,7 @@ listingsRouter.get("/", requireAuth, async (req, res) => {
 });
 
 // POST create (auth + phone required)
-listingsRouter.post("/", requireAuth, requireProfileComplete, async (req: any, res) => {
+listingsRouter.post("/", requireAuth, createListingLimiter, requireProfileComplete, async (req: any, res) => {
   const { clientId } = req.body as { clientId?: string };
   if (clientId) {
     const existing = await Listing.findOne({ clientId });

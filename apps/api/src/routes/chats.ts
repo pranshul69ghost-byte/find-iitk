@@ -1,4 +1,5 @@
 import { Router } from "express";
+import rateLimit from "express-rate-limit";
 import { requireAuth } from "../middleware/auth.js";
 import { requireProfileComplete } from "../middleware/requireProfileComplete.js";
 import { Chat } from "../models/Chat.js";
@@ -6,6 +7,15 @@ import { Listing } from "../models/Listing.js";
 import { Message } from "../models/Message.js";
 
 export const chatsRouter = Router();
+
+const sendMsgLimiter = rateLimit({
+  windowMs: 1000,               // 1s window
+  max: 4,                       // up to 4 messages/sec per user
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req: any) => req.user?.id || req.ip,
+  message: { error: "Too many messages. Please slow down." }
+});
 
 // Create or get chat for a listing with owner
 chatsRouter.post("/", requireAuth, requireProfileComplete, async (req: any, res) => {
@@ -46,7 +56,7 @@ chatsRouter.get("/:id/messages", requireAuth, async (req: any, res) => {
 });
 
 // Send a message
-chatsRouter.post("/:id/messages", requireAuth, requireProfileComplete, async (req: any, res) => {
+chatsRouter.post("/:id/messages", requireAuth, sendMsgLimiter, requireProfileComplete, async (req: any, res) => {
   const chat = await Chat.findById(req.params.id);
   if (!chat || !chat.participants.map(String).includes(String(req.user.id)))
     return res.status(403).json({ error: "Not allowed" });
