@@ -43,7 +43,12 @@ export default function App() {
         <header>
           <div className="nav">
             <a className="brand" href="#" onClick={(e)=>{e.preventDefault(); nav("/");}}>
-              <span className="brand-badge">I</span><span>IITK Market</span>
+              <img 
+                src="/find-at-iitk-icon.svg" 
+                alt="Find@IITK Logo" 
+                style={{ height: "24px", width: "24px", marginRight: "8px" }}
+              />
+              <span>Find@IITK</span>
             </a>
 
             {/* Desktop actions */}
