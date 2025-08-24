@@ -16,7 +16,15 @@ import { filesRouter } from "./routes/files.js";
 import { chatsRouter } from "./routes/chats.js";
 
 const app = express();
-app.use(cors({ origin: env.API_ORIGIN, credentials: true }));
+const allowed = (process.env.API_ORIGIN || "").split(",").map(s=>s.trim()).filter(Boolean);
+app.use(cors({
+  origin: (origin, cb) => {
+    if (!origin) return cb(null, true);
+    if (allowed.includes(origin)) return cb(null, true);
+    cb(new Error("CORS blocked: " + origin));
+  },
+  credentials: true
+}));
 app.use(express.json({ limit: "5mb" }));
 app.use(cookieParser());
 app.use(morgan("dev"));
@@ -33,7 +41,7 @@ app.use("/chats", chatsRouter);
 app.use("/uploads", express.static(path.resolve("uploads")));
 
 const server = http.createServer(app);
-const io = new SocketIOServer(server, { cors: { origin: env.API_ORIGIN } });
+const io = new SocketIOServer(server, { cors: { origin: allowed } });
 
 // simple token auth for sockets
 io.on("connection", (socket) => {
@@ -53,7 +61,8 @@ app.set("io", io);
 mongoose
   .connect(env.MONGO_URI)
   .then(() => {
-    server.listen(env.API_PORT, () => console.log(`API running http://localhost:${env.API_PORT}`));
+    const PORT = Number(process.env.PORT || env.API_PORT || 4000);
+    server.listen(PORT, "0.0.0.0", () => console.log(`API running on :${PORT}`));
   })
   .catch((e) => {
     console.error("Mongo error", e);

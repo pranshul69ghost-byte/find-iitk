@@ -49,30 +49,45 @@ authRouter.post("/request-otp", otpLimiter, async (req, res) => {
 });
 
 authRouter.post("/verify-otp", async (req, res) => {
-  const { email, code, name } = req.body as { email?: string; code?: string; name?: string };
-  if (!email || !code) return res.status(400).json({ error: "email and code required" });
-  if (!isIitkEmail(email)) return res.status(400).json({ error: "IITK email required" });
+  try {
+    const rawEmail = (req.body?.email as string) || "";
+    const email = rawEmail.trim().toLowerCase();
+    const code = String(req.body?.code || "");
+    const name = String(req.body?.name || "");
 
-  const otp = await Otp.findOne({ email: email.toLowerCase(), consumed: false }).sort({ createdAt: -1 });
-  if (!otp) return res.status(400).json({ error: "No active code. Request a new one." });
-  if (otp.expiresAt < new Date()) return res.status(400).json({ error: "Code expired" });
+    if (!email || !code) return res.status(400).json({ error: "email and code required" });
+    if (!isIitkEmail(email)) return res.status(400).json({ error: "IITK email required" });
 
-  const ok = await bcrypt.compare(code, otp.codeHash);
-  otp.attempts += 1;
-  if (!ok) {
+    const otp = await Otp.findOne({ email, consumed: false }).sort({ createdAt: -1 });
+    if (!otp) return res.status(400).json({ error: "No active code. Request a new one." });
+
+    const expiry = otp.expiresAt instanceof Date ? otp.expiresAt : (otp.expiresAt ? new Date(otp.expiresAt) : null);
+    if (!expiry || expiry.getTime() < Date.now()) return res.status(400).json({ error: "Code expired" });
+
+    const hash = typeof otp.codeHash === "string" ? otp.codeHash : "";
+    if (!hash) return res.status(400).json({ error: "Invalid code" });
+
+    const ok = await bcrypt.compare(code, hash);
+
+    otp.attempts = (otp.attempts ?? 0) + 1;
+    if (!ok) {
+      await otp.save();
+      return res.status(400).json({ error: "Invalid code" });
+    }
+
+    otp.consumed = true;
     await otp.save();
-    return res.status(400).json({ error: "Invalid code" });
+
+    const user = await User.findOneAndUpdate(
+      { email },
+      { email, ...(name ? { name } : {}) },
+      { upsert: true, new: true }
+    );
+
+    const token = jwt.sign({ id: user._id, email: user.email, name: user.name }, env.JWT_SECRET, { expiresIn: "7d" });
+    res.json({ token, user });
+  } catch (err: any) {
+    console.error("verify-otp error:", err);
+    res.status(500).json({ error: err?.message || "Verification failed" });
   }
-
-  otp.consumed = true;
-  await otp.save();
-
-  const user = await User.findOneAndUpdate(
-    { email: email.toLowerCase() },
-    { email: email.toLowerCase(), ...(name ? { name } : {}) },
-    { upsert: true, new: true }
-  );
-
-  const token = jwt.sign({ id: user._id, email: user.email, name: user.name }, env.JWT_SECRET, { expiresIn: "7d" });
-  res.json({ token, user });
 });

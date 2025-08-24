@@ -11,16 +11,18 @@ export const chatsRouter = Router();
 chatsRouter.post("/", requireAuth, requireProfileComplete, async (req: any, res) => {
   const { listingId } = req.body as { listingId: string };
   if (!listingId) return res.status(400).json({ error: "listingId required" });
+
   const listing = await Listing.findById(listingId);
   if (!listing) return res.status(404).json({ error: "Listing not found" });
-  const userId = req.user.id.toString();
-  const ownerId = listing.ownerId.toString();
-  const participants = [userId, ownerId].sort();
+  if (!listing.ownerId) return res.status(400).json({ error: "Listing has no owner" });
 
+  const userId = String(req.user.id);
+  const ownerId = String(listing.ownerId);
+  if (userId === ownerId) return res.status(400).json({ error: "You cannot chat with yourself" });
+
+  const participants = [userId, ownerId].sort();
   let chat = await Chat.findOne({ listingId, participants: { $all: participants, $size: 2 } });
-  if (!chat) {
-    chat = await Chat.create({ listingId, participants, lastMessageAt: new Date() });
-  }
+  if (!chat) chat = await Chat.create({ listingId, participants, lastMessageAt: new Date() });
   res.json(chat);
 });
 

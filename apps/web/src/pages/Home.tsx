@@ -5,7 +5,7 @@ import { useMemo, useState, useEffect } from "react";
 
 const categories = ["All Categories","Electronics","Books","Cycles","Room Essentials","Clothing","Misc"];
 
-export default function Home({ openPostModal }: { openPostModal: () => void }) {
+export default function Home({ openPostModal: _ }: { openPostModal?: () => void }) {
   const [q, setQ] = useState(""); const [cat, setCat] = useState("all");
   const [type, setType] = useState("all"); const [min, setMin] = useState(""); const [max, setMax] = useState("");
   const [sort, setSort] = useState("updatedAt_desc");

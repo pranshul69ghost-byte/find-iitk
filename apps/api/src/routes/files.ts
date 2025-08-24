@@ -1,5 +1,6 @@
 import { Router } from "express";
-import multer from "multer";
+import multer, { FileFilterCallback } from "multer";
+import type { Express } from "express";
 import path from "path";
 import fs from "fs";
 import { requireAuth } from "../middleware/auth.js";
@@ -9,16 +10,16 @@ export const filesRouter = Router();
 
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB/file
-  fileFilter: (_req, file, cb) => {
-    if (/^image\/(png|jpe?g|webp|gif)$/i.test(file.mimetype)) cb(null, true);
-    else cb(new Error("Invalid file type"), false);
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (_req: any, file: Express.Multer.File, cb: FileFilterCallback) => {
+    if (/^image\/(png|jpe?g|webp|gif)$/i.test(file.mimetype)) return cb(null, true);
+    cb(new Error("Invalid file type"));
   }
 });
 
 filesRouter.post("/upload", requireAuth, upload.array("files", 5), async (req, res) => {
   try {
-    const files = (req.files as Express.Multer.File[]) || [];
+    const files = (req as any).files as Express.Multer.File[] || [];
     const urls: string[] = [];
 
     if (hasCloudinary) {
@@ -31,7 +32,6 @@ filesRouter.post("/upload", requireAuth, upload.array("files", 5), async (req, r
     } else {
       const dir = path.resolve("uploads");
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-
       for (const f of files) {
         const ext = f.mimetype.split("/")[1] || "jpg";
         const name = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
