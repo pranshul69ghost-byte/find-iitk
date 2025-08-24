@@ -6,7 +6,8 @@ const OtpSchema = new Schema(
     codeHash: String,
     expiresAt: Date,
     consumed: { type: Boolean, default: false },
-    attempts: { type: Number, default: 0 }
+    attempts: { type: Number, default: 0 },
+    purpose: { type: String, enum: ["register"], default: "register", index: true }
   },
   { timestamps: true }
 );
