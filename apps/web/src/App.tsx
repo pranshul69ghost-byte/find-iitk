@@ -10,6 +10,9 @@ import ListingModal from "./components/ListingModal";
 import RequireAuth from "./components/RequireAuth";
 import RequirePhone from "./components/RequirePhone";
 import "./styles/ui.css";
+import "./styles/responsive.css";
+// apps/web/src/App.tsx (top of file)
+import logoUrl from "./assets/find-at-iitk-icon.svg"
 
 function useTheme() {
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
@@ -43,7 +46,12 @@ export default function App() {
         <header>
           <div className="nav">
             <a className="brand" href="#" onClick={(e)=>{e.preventDefault(); nav("/");}}>
-              <span className="brand-badge">I</span><span>IITK Market</span>
+              <img 
+                src={logoUrl} 
+                alt="Find@IITK Logo"
+                style={{ height: "24px", width: "24px", marginRight: "1px" }}
+              />
+              <span>Find@IITK</span>
             </a>
 
             {/* Desktop actions */}

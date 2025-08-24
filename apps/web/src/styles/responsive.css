@@ -1,0 +1,40 @@
+/* Breakpoints */
+:root {
+  --mobile: 480px;
+  --tablet: 768px;
+  --desktop: 1024px;
+}
+
+/* Grid System */
+.grid {
+  display: grid;
+  gap: 1rem;
+  width: 100%;
+}
+
+.grid-cols-1 { grid-template-columns: 1fr; }
+.grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+@media (max-width: 768px) {
+  .grid-cols-2, 
+  .grid-cols-3, 
+  .grid-cols-4 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Responsive Container */
+.container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 1rem;
+  max-width: var(--desktop);
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 0.5rem;
+  }
+}
