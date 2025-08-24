@@ -9,7 +9,6 @@ export default function Home({ openPostModal: _ }: { openPostModal?: () => void 
   const [q, setQ] = useState(""); const [cat, setCat] = useState("all");
   const [type, setType] = useState("all"); const [min, setMin] = useState(""); const [max, setMax] = useState("");
   const [sort, setSort] = useState("updatedAt_desc");
-  const [showFilters, setShowFilters] = useState(false);
 
   const params: any = useMemo(() => {
     const p: any = {};
@@ -41,33 +40,28 @@ export default function Home({ openPostModal: _ }: { openPostModal?: () => void 
 
   return (
     <>
-      <div className="only-mobile" style={{ marginBottom:8 }}>
-        <button className="btn" onClick={()=>setShowFilters(s=>!s)}>{showFilters?"Hide":"Show"} Filters</button>
-      </div>
-      {(showFilters || window.innerWidth>=640) && (
-        <div className="card pad" style={{ marginBottom: 12 }}>
-          <div className="filters">
-            <input placeholder="Search (e.g., cycle, charger, wallet)" value={q} onChange={e => setQ(e.target.value)} onKeyDown={(e)=>e.key==="Enter"&&refetch()} />
-            <select value={cat} onChange={e => setCat(e.target.value)}>
-              <option value="all">All Categories</option>
-              {categories.slice(1).map(c => <option key={c}>{c}</option>)}
-            </select>
-            <select value={type} onChange={e => setType(e.target.value)}>
-              <option value="all">All Types</option>
-              <option value="sale">For Sale</option>
-              <option value="lost">Lost</option>
-              <option value="found">Found</option>
-            </select>
-            <input type="number" placeholder="Min ₹" value={min} onChange={e => setMin(e.target.value)} />
-            <input type="number" placeholder="Max ₹" value={max} onChange={e => setMax(e.target.value)} />
-            <select value={sort} onChange={e => setSort(e.target.value)}>
-              <option value="updatedAt_desc">Newest</option>
-              <option value="price_asc">Price ↑</option>
-              <option value="price_desc">Price ↓</option>
-            </select>
-          </div>
+      <div className="card pad" style={{ marginBottom: 12 }}>
+        <div className="filters">
+          <input placeholder="Search (e.g., cycle, charger, wallet)" value={q} onChange={e => setQ(e.target.value)} onKeyDown={(e)=>e.key==="Enter"&&refetch()} />
+          <select value={cat} onChange={e => setCat(e.target.value)}>
+            <option value="all">All Categories</option>
+            {categories.slice(1).map(c => <option key={c}>{c}</option>)}
+          </select>
+          <select value={type} onChange={e => setType(e.target.value)}>
+            <option value="all">All Types</option>
+            <option value="sale">For Sale</option>
+            <option value="lost">Lost</option>
+            <option value="found">Found</option>
+          </select>
+          <input type="number" placeholder="Min ₹" value={min} onChange={e => setMin(e.target.value)} />
+          <input type="number" placeholder="Max ₹" value={max} onChange={e => setMax(e.target.value)} />
+          <select value={sort} onChange={e => setSort(e.target.value)}>
+            <option value="updatedAt_desc">Newest</option>
+            <option value="price_asc">Price ↑</option>
+            <option value="price_desc">Price ↓</option>
+          </select>
         </div>
-      )}
+      </div>
 
       {isLoading ? <div className="empty">Loading…</div> :
         items?.length ? (

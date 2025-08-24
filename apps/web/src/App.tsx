@@ -1,4 +1,4 @@
-import { Routes, Route, NavLink, useNavigate, useLocation } from "react-router-dom";
+import { Routes, Route, NavLink, useNavigate } from "react-router-dom";
 import Home from "./pages/Home";
 import ListingDetail from "./pages/ListingDetail";
 import Profile from "./pages/Profile";
@@ -25,12 +25,7 @@ export default function App() {
   const modalRef = useRef<HTMLDialogElement | null>(null);
   const { theme, setTheme } = useTheme();
   const nav = useNavigate();
-  const location = useLocation();
-  const [open, setOpen] = useState(false);
   const authed = !!token();
-
-  // Close drawer on route change
-  useEffect(() => { setOpen(false); }, [location.pathname]);
 
   const logout = () => {
     localStorage.removeItem("token");
@@ -41,16 +36,16 @@ export default function App() {
     <div>
       {authed && (
         <header>
-          <div className="nav">
+          <div className="nav" style={{ maxWidth: "100%" }}>
             <a className="brand" href="#" onClick={(e)=>{e.preventDefault(); nav("/");}}>
               <span className="brand-badge">I</span><span>IITK Market</span>
             </a>
-
-            {/* Desktop actions */}
-            <div className="nav-actions only-desktop">
+            <div style={{ marginLeft: 12 }} className="flex">
               <NavLink to="/" className="btn">Home</NavLink>
               <NavLink to="/messages" className="btn">Messages</NavLink>
               <button className="btn primary" onClick={() => modalRef.current?.showModal()}>Post Item</button>
+            </div>
+            <div style={{ marginLeft: "auto" }} className="flex">
               <NavLink to="/me" className="btn">Profile</NavLink>
               <button className="btn" onClick={logout}>Logout</button>
               <select
@@ -69,37 +64,8 @@ export default function App() {
                 <option value="sunset">Sunset</option>
               </select>
             </div>
-
-            {/* Mobile hamburger */}
-            <button className="btn only-mobile" onClick={()=>setOpen(true)} aria-label="Open menu">☰</button>
           </div>
         </header>
-      )}
-
-      {/* Mobile Drawer */}
-      {authed && (
-        <div className={`drawer ${open ? "open" : ""}`} onClick={()=>setOpen(false)}>
-          <div className="drawer-panel" onClick={(e)=>e.stopPropagation()}>
-            <div className="row" style={{ marginBottom:10 }}>
-              <div className="title">Menu</div>
-              <button className="btn" onClick={()=>setOpen(false)}>✕</button>
-            </div>
-            <button className="btn primary" onClick={()=>{ modalRef.current?.showModal(); setOpen(false); }}>Post Item</button>
-            <NavLink to="/" className="btn">Home</NavLink>
-            <NavLink to="/messages" className="btn">Messages</NavLink>
-            <NavLink to="/me" className="btn">Profile</NavLink>
-            <button className="btn" onClick={()=>{ logout(); setOpen(false); }}>Logout</button>
-            <select value={theme} onChange={(e)=>setTheme(e.target.value)} className="btn" style={{ marginTop:8 }}>
-              <option value="light">Light</option>
-              <option value="dark">Dark</option>
-              <option value="midnight">Midnight</option>
-              <option value="ocean">Ocean</option>
-              <option value="grape">Grape</option>
-              <option value="forest">Forest</option>
-              <option value="sunset">Sunset</option>
-            </select>
-          </div>
-        </div>
       )}
 
       <main className="container">
