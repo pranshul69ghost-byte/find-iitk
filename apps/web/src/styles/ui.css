@@ -14,6 +14,7 @@
   --r:14px; --r-sm:12px; --shadow:0 6px 24px rgba(2,18,64,.06);
   /* chat height */
   --chat-h: 520px;
+  --header-height: 60px;
 }
 @media (max-width: 900px){ :root{ --chat-h: 420px; } }
 
@@ -60,6 +61,118 @@
   --nav-bg: rgba(31,14,10,.85);
   --border:#3b1b13; --chip:#25100c; --hover:#2a140f;
   --text:#fde2d2; --muted:#f2b39c; --focus:#fb923c;
+}
+
+/* Base Styles */
+:root {
+  --header-height: 60px;
+}
+
+/* Typography */
+html {
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+/* Layout Components */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-height);
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg);
+  z-index: 100;
+}
+
+.brand {
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Cards */
+.card {
+  width: 100%;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Forms */
+input, 
+select, 
+textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 0.25rem;
+}
+
+/* Buttons */
+.btn {
+  padding: 0.75rem 1rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s;
+}
+
+@media (max-width: 768px) {
+  .btn {
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .only-desktop {
+    display: none;
+  }
+}
+
+@media (min-width: 769px) {
+  .only-mobile {
+    display: none;
+  }
+}
+
+/* Mobile Drawer */
+.drawer {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s;
+}
+
+.drawer.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.drawer-panel {
+  position: fixed;
+  top: 0;
+  right: -300px;
+  width: 300px;
+  height: 100%;
+  background: var(--bg);
+  padding: 1rem;
+  transition: right 0.3s;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.drawer.open .drawer-panel {
+  right: 0;
 }
 
 *{box-sizing:border-box}

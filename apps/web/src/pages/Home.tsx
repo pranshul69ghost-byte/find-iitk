@@ -40,7 +40,7 @@ export default function Home({ openPostModal: _ }: { openPostModal?: () => void 
   }, [data, sort]);
 
   return (
-    <>
+    <div className="container">
       <div className="only-mobile" style={{ marginBottom:8 }}>
         <button className="btn" onClick={()=>setShowFilters(s=>!s)}>{showFilters?"Hide":"Show"} Filters</button>
       </div>
@@ -71,14 +71,14 @@ export default function Home({ openPostModal: _ }: { openPostModal?: () => void 
 
       {isLoading ? <div className="empty">Loading…</div> :
         items?.length ? (
-          <div className="grid">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {items.map((it: any) => <Card key={it._id} item={it} />)}
           </div>
         ) : (
           <div className="empty">No items match your filters yet.</div>
         )
       }
-    </>
+    </div>
   );
 }
 

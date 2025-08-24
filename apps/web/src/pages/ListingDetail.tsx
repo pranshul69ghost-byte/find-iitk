@@ -85,82 +85,84 @@ export default function ListingDetail() {
   if (!listing) return <div className="empty">Not found</div>;
 
   return (
-    <div className="grid-2">
-      <div className="card">
-        <img className="item-img" src={listing.images?.[0] || `https://picsum.photos/seed/${listing._id}/1000/700`} />
-        <div className="pad" style={{ padding: "12px 14px" }}>
-          <div className="row">
-            <div className="title">{listing.title}</div>
-            <span className={`badge ${listing.type}`}>{listing.type}</span>
-          </div>
-          <div className="muted" style={{ marginTop: 6 }}>{listing.description}</div>
-
-          <div className="card pad" style={{ marginTop: 12 }}>
-            <div className="title" style={{ marginBottom: 8 }}>Details</div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 8 }}>
-              {details.map(([label, value]: any) => (
-                <React.Fragment key={label}>
-                  <div className="muted" style={{ fontSize: 13 }}>{label}</div>
-                  <div style={{ fontWeight: 600 }}>{value || "—"}</div>
-                </React.Fragment>
-              ))}
-              <div className="muted" style={{ fontSize: 13 }}>Category</div>
-              <div style={{ fontWeight: 600 }}>{listing.category}</div>
-              <div className="muted" style={{ fontSize: 13 }}>Status</div>
-              <div style={{ fontWeight: 600 }}>{listing.status}</div>
+    <div className="container">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="card">
+          <img className="item-img" src={listing.images?.[0] || `https://picsum.photos/seed/${listing._id}/1000/700`} />
+          <div className="pad" style={{ padding: "12px 14px" }}>
+            <div className="row">
+              <div className="title">{listing.title}</div>
+              <span className={`badge ${listing.type}`}>{listing.type}</span>
             </div>
-          </div>
-        </div>
-      </div>
+            <div className="muted" style={{ marginTop: 6 }}>{listing.description}</div>
 
-      <div className="card pad">
-        <div className="title" style={{ marginBottom: 8 }}>Posted by</div>
-        {owner ? (
-          <div>
-            <div style={{ fontWeight: 600 }}>{owner.name || owner.email}</div>
-            <div className="muted" style={{ fontSize: 14 }}>{owner.email}</div>
-            <div className="badges" style={{ marginTop: 8 }}>
-              {owner.hostel && <span className="badge">Hostel: {owner.hostel}</span>}
-              {owner.department && <span className="badge">Dept: {owner.department}</span>}
-              {owner.gradYear && <span className="badge">Batch: {owner.gradYear}</span>}
-              {owner.phone && <span className="badge">📞 {owner.phone}</span>}
-              {owner.whatsapp && <span className="badge">WhatsApp: {owner.whatsapp}</span>}
-            </div>
-            <div className="row" style={{ marginTop: 12 }}>
-              <button className="btn primary" onClick={() => startChat.mutate()}>Message</button>
-              {isOwner && (
-                <button
-                  className="btn"
-                  onClick={() => { if (confirm("Delete this listing?")) removeListing.mutate(); }}
-                >
-                  Delete listing
-                </button>
-              )}
-            </div>
-          </div>
-        ) : (
-          <div className="muted">User info unavailable</div>
-        )}
-
-        <hr style={{ border: 0, borderTop: "1px solid var(--border)", margin: "16px 0" }} />
-
-        <div className="title" style={{ marginBottom: 8 }}>Comments</div>
-        <div style={{ display: "grid", gap: 8 }}>
-          {commentsQ.data?.length ? (
-            commentsQ.data.map((c: any) => (
-              <div key={c._id} className="card pad" style={{ padding: 10 }}>
-                <div style={{ fontWeight: 600 }}>{c.userId?.name || c.userId?.email || "User"}</div>
-                <div style={{ fontSize: 14 }}>{c.text}</div>
+            <div className="card pad" style={{ marginTop: 12 }}>
+              <div className="title" style={{ marginBottom: 8 }}>Details</div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 8 }}>
+                {details.map(([label, value]: any) => (
+                  <React.Fragment key={label}>
+                    <div className="muted" style={{ fontSize: 13 }}>{label}</div>
+                    <div style={{ fontWeight: 600 }}>{value || "—"}</div>
+                  </React.Fragment>
+                ))}
+                <div className="muted" style={{ fontSize: 13 }}>Category</div>
+                <div style={{ fontWeight: 600 }}>{listing.category}</div>
+                <div className="muted" style={{ fontSize: 13 }}>Status</div>
+                <div style={{ fontWeight: 600 }}>{listing.status}</div>
               </div>
-            ))
-          ) : (
-            <div className="muted">No comments yet.</div>
-          )}
+            </div>
+          </div>
         </div>
 
-        <div className="row" style={{ marginTop: 10 }}>
-          <input placeholder="Add a comment…" value={text} onChange={(e)=>setText(e.target.value)} />
-          <button className="btn primary" onClick={() => addComment.mutate()}>Post</button>
+        <div className="card">
+          <div className="title" style={{ marginBottom: 8 }}>Posted by</div>
+          {owner ? (
+            <div>
+              <div style={{ fontWeight: 600 }}>{owner.name || owner.email}</div>
+              <div className="muted" style={{ fontSize: 14 }}>{owner.email}</div>
+              <div className="badges" style={{ marginTop: 8 }}>
+                {owner.hostel && <span className="badge">Hostel: {owner.hostel}</span>}
+                {owner.department && <span className="badge">Dept: {owner.department}</span>}
+                {owner.gradYear && <span className="badge">Batch: {owner.gradYear}</span>}
+                {owner.phone && <span className="badge">📞 {owner.phone}</span>}
+                {owner.whatsapp && <span className="badge">WhatsApp: {owner.whatsapp}</span>}
+              </div>
+              <div className="row" style={{ marginTop: 12 }}>
+                <button className="btn primary" onClick={() => startChat.mutate()}>Message</button>
+                {isOwner && (
+                  <button
+                    className="btn"
+                    onClick={() => { if (confirm("Delete this listing?")) removeListing.mutate(); }}
+                  >
+                    Delete listing
+                  </button>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="muted">User info unavailable</div>
+          )}
+
+          <hr style={{ border: 0, borderTop: "1px solid var(--border)", margin: "16px 0" }} />
+
+          <div className="title" style={{ marginBottom: 8 }}>Comments</div>
+          <div style={{ display: "grid", gap: 8 }}>
+            {commentsQ.data?.length ? (
+              commentsQ.data.map((c: any) => (
+                <div key={c._id} className="card pad" style={{ padding: 10 }}>
+                  <div style={{ fontWeight: 600 }}>{c.userId?.name || c.userId?.email || "User"}</div>
+                  <div style={{ fontSize: 14 }}>{c.text}</div>
+                </div>
+              ))
+            ) : (
+              <div className="muted">No comments yet.</div>
+            )}
+          </div>
+
+          <div className="row" style={{ marginTop: 10 }}>
+            <input placeholder="Add a comment…" value={text} onChange={(e)=>setText(e.target.value)} />
+            <button className="btn primary" onClick={() => addComment.mutate()}>Post</button>
+          </div>
         </div>
       </div>
     </div>

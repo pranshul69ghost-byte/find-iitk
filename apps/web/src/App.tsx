@@ -10,6 +10,7 @@ import ListingModal from "./components/ListingModal";
 import RequireAuth from "./components/RequireAuth";
 import RequirePhone from "./components/RequirePhone";
 import "./styles/ui.css";
+import "./styles/responsive.css";
 // apps/web/src/App.tsx (top of file)
 import logoUrl from "./assets/find-at-iitk-icon.svg"
 
